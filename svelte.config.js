@@ -1,11 +1,19 @@
-import adapter from '@sveltejs/adapter-vercel';
-import { vitePreprocess } from '@sveltejs/kit/vite';
+import adapter from '@sveltejs/adapter-static';
+const production = process.env.NODE_ENV === 'production';
 
 /** @type {import('@sveltejs/kit').Config} */
-export default {
-  preprocess: vitePreprocess(),
-  kit: {
-    // Leave this blank to let the adapter handle everything
-    adapter: adapter() 
-  }
+const config = {
+	kit: {
+		// adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
+		// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
+		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
+		adapter: adapter({
+			fallback: 'index.html' // すべてのリクエストを index.html にフォールバック
+		}),
+		paths: {
+			base: production ? '/myProfileTemplate-Svelte' : '',
+		}
+	}
 };
+
+export default config;
