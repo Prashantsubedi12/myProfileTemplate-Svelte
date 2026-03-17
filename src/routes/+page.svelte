@@ -184,6 +184,18 @@
       border-radius: 999px;
     }
 
+    .first-badge {
+      font-size: 0.65rem;
+      font-weight: 600;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(129, 140, 248, 0.3);
+      color: #a5b4fc;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      vertical-align: middle;
+      margin-left: 0.4rem;
+    }
+
     .project-link {
       color: #818cf8;
       font-size: 0.9rem;
@@ -387,8 +399,8 @@
 
         <div class="project-card">
           <div class="project-emoji">🎬</div>
-          <h3>Movie Ranking Project</h3>
-          <p>A curated list of my top 3 all-time favourite movies — Interstellar, Avengers: Endgame, and Top Gun.</p>
+          <h3>Movie Ranking <span class="first-badge">1st Project</span></h3>
+          <p>My very first project — built when I had just started coding and only knew HTML. I wanted to put my new skills to use, so I made a ranked list of my top 3 all-time favourite movies: Interstellar, Avengers: Endgame, and Top Gun.</p>
           <div class="tags">
             <span class="tag">HTML</span>
             <span class="tag">CSS</span>
@@ -398,8 +410,8 @@
 
         <div class="project-card">
           <div class="project-emoji">🎂</div>
-          <h3>Birthday Invite Project</h3>
-          <p>A fun birthday invitation page with event details, a wishlist, and a location link.</p>
+          <h3>Birthday Invite <span class="first-badge">2nd Project</span></h3>
+          <p>My second project, still early in my coding journey with just HTML knowledge. I challenged myself to build a birthday invitation page complete with event details, a wishlist, and a location link.</p>
           <div class="tags">
             <span class="tag">HTML</span>
             <span class="tag">CSS</span>
