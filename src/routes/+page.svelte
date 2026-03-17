@@ -15,6 +15,59 @@
     color: inherit;
     text-decoration: none;
   }
+  /* ── AVATAR ── */
+  .avatar-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+  }
+
+  .avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid rgba(129, 140, 248, 0.4);
+    background: rgba(30, 27, 75, 0.6);
+    object-fit: cover;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+
+  .avatar-wrapper:hover .avatar {
+    transform: scale(1.08);
+    border-color: rgba(129, 140, 248, 0.9);
+  }
+
+  .greetings {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(-85%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .avatar-wrapper:hover .greetings {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-100%);
+  }
+
+  .greetings span {
+    background: rgba(30, 27, 75, 0.95);
+    border: 1px solid rgba(129, 140, 248, 0.4);
+    color: #a5b4fc;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
   /* ── HERO ── */
     .hero {
       min-height: 100vh;
@@ -375,6 +428,16 @@
 <!-- paste ALL your HTML content here (hero, projects, about, contact, footer) -->
 <section class="hero">
   <div class="hero-badge">👋 Welcome to my portfolio</div>
+
+  <div class="avatar-wrapper">
+    <img src="/avatar.png" alt="Prashant's memoji" class="avatar" />
+    <div class="greetings">
+      <span>Namaste 🙏</span>
+      <span>こんにちは</span>
+      <span>Hello 👋</span>
+    </div>
+  </div>
+
   <h1>Prashant <span>Subedi</span></h1>
   <p class="subtitle">Web Developer &amp; Engineering Student</p>
   <p class="bio">
