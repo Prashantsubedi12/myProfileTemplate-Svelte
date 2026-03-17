@@ -30,7 +30,7 @@
     border: 3px solid rgba(129, 140, 248, 0.4);
     background: rgba(30, 27, 75, 0.6);
     object-fit: cover;
-    transition: transform 0.3s, border-color 0.3s;
+    transition: transform 0.3s, border-color 0.3s, opacity 0.3s;
   }
 
   .avatar-wrapper:hover .avatar {
@@ -52,7 +52,7 @@
     transition: opacity 0.25s ease, transform 0.25s ease;
   }
 
-  .avatar-wrapper:hover .greetings {
+  .greetings.visible {
     opacity: 1;
     transform: translateX(-50%) translateY(-100%);
   }
@@ -425,13 +425,25 @@
   
 </style>
 
+<script>
+  let hovered = false;
+</script>
+
 <!-- paste ALL your HTML content here (hero, projects, about, contact, footer) -->
 <section class="hero">
   <div class="hero-badge">👋 Welcome to my portfolio</div>
 
-  <div class="avatar-wrapper">
-    <img src="/avatar.png" alt="Prashant's memoji" class="avatar" />
-    <div class="greetings">
+  <div
+    class="avatar-wrapper"
+    on:mouseenter={() => hovered = true}
+    on:mouseleave={() => hovered = false}
+  >
+    <img
+      src={hovered ? '/wakingavatar.png' : '/sleepingavatar.png'}
+      alt="Prashant's memoji"
+      class="avatar"
+    />
+    <div class="greetings" class:visible={hovered}>
       <span>Namaste 🙏</span>
       <span>こんにちは</span>
       <span>Hello 👋</span>
