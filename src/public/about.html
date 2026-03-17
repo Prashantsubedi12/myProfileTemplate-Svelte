@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Me | Prashant Subedi</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+    }
+    .container { max-width: 720px; margin: 0 auto; }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #818cf8;
+      font-size: 0.9rem;
+      text-decoration: none;
+      margin-bottom: 2.5rem;
+    }
+    .back:hover { color: #a5b4fc; }
+    h1 {
+      font-size: clamp(1.8rem, 5vw, 2.4rem);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 2rem;
+    }
+    hr { border: none; border-top: 1px solid #1e293b; margin-bottom: 2rem; }
+    .bio { color: #94a3b8; line-height: 1.85; margin-bottom: 1.25rem; font-size: 1rem; }
+    .bio span { color: #a5b4fc; font-weight: 600; }
+    .focus-list {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+    .focus-list h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 1rem;
+    }
+    .focus-list ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .focus-list li {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      display: flex;
+      gap: 0.6rem;
+    }
+    .focus-list li::before { content: '▸'; color: #818cf8; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../app.html" class="back">← Back to Portfolio</a>
+    <h1>About Me</h1>
+    <hr />
+
+    <p class="bio">
+      Hello! I'm <span>Prashant Subedi</span>, a second-year student majoring in
+      <span>Information Processing Engineering</span> at Industrial Technology Junior College
+      (産業技術短期大学).
+    </p>
+    <p class="bio">
+      My journey into technology is driven by a curiosity about how things work — from the
+      low-level logic of C programming to the complex software engineering behind SpaceX's
+      Falcon rocket landings. I am passionate about building software that solves real
+      problems and creates engaging experiences.
+    </p>
+    <p class="bio">
+      I am the founder of <span>Team Extra</span>, a programming club at my university
+      dedicated to collaborative coding and learning new tech stacks.
+    </p>
+    <p class="bio">
+      I am always looking for new challenges and opportunities to apply my skills in a
+      real-world environment.
+    </p>
+
+    <div class="focus-list">
+      <h2>Currently Focusing On</h2>
+      <ul>
+        <li>Programming: Strengthening my foundation in C and preparing for the FE Exam.</li>
+        <li>Creative Development: Exploring Game Development with Unity and Web Development.</li>
+        <li>Community: Growing Team Extra and collaborating on new tech projects.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
