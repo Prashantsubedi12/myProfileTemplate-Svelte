@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  %sveltekit.head%
+
   <title>Prashant Subedi | Portfolio</title>
   <style>
     * {
@@ -362,7 +364,8 @@
   </style>
 </head>
 
-<body>
+<body data-sveltekit-preload-data="hover">
+  <div style="display: contents"></div>%sveltekit.body%
 
   <!-- Hero -->
   <section class="hero">
