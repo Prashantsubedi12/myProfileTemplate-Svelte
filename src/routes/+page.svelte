@@ -388,7 +388,7 @@
             <span class="tag">HTML</span>
             <span class="tag">CSS</span>
           </div>
-          <a href="./public/movie-ranking.html" class="project-link">View Project →</a>
+          <a href="/movie-ranking.html" class="project-link">View Project →</a>
         </div>
 
         <div class="project-card">
@@ -399,7 +399,7 @@
             <span class="tag">HTML</span>
             <span class="tag">CSS</span>
           </div>
-          <a href="./public/birthday-invite.html" class="project-link">View Project →</a>
+          <a href="/birthday-invite.html" class="project-link">View Project →</a>
         </div>
 
       </div>
