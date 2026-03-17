@@ -198,6 +198,11 @@
       color: #a5b4fc;
     }
 
+    .project-links {
+      display: flex;
+      gap: 1.25rem;
+    }
+
     /* ── ABOUT ── */
     #about {
       background: #020617;
@@ -400,6 +405,21 @@
             <span class="tag">CSS</span>
           </div>
           <a href="/birthday-invite.html" class="project-link">View Project →</a>
+        </div>
+
+        <div class="project-card">
+          <div class="project-emoji">🚀</div>
+          <h3>Space Game</h3>
+          <p>A browser-based space game built during a mini hackathon with limited time. My first ever game — developed with AI tools, focused on fast delivery and fun gameplay.</p>
+          <div class="tags">
+            <span class="tag">HTML</span>
+            <span class="tag">JavaScript</span>
+            <span class="tag">CSS</span>
+          </div>
+          <div class="project-links">
+            <a href="https://space-game-amber.vercel.app" target="_blank" rel="noopener" class="project-link">Live Demo →</a>
+            <a href="https://github.com/Prashantsubedi12/Space-Game" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+          </div>
         </div>
 
       </div>
