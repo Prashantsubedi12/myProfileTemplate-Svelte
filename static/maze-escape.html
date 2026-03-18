@@ -285,6 +285,7 @@
       <li>Move with <strong>W A S D</strong> or <strong>Arrow Keys</strong></li>
       <li>Navigate from <strong>S</strong> (start) to <strong>G</strong> (goal)</li>
       <li>Walls <strong>#</strong> block movement — no steps wasted on walls</li>
+      <li><strong>Fog of war</strong> — you can only see 3 cells around you!</li>
       <li>Player 1 goes first, then Player 2 gets the same maze</li>
       <li>Fastest time wins — steps as a tiebreaker!</li>
     </ul>
@@ -383,9 +384,10 @@
 
 <script>
   // ── Constants ──
-  const SIZE = 15;
-  const WALL_RATE = 30;
-  const CELL = 34; // px per cell
+  const SIZE = 19;
+  const WALL_RATE = 48;
+  const CELL = 30; // px per cell
+  const FOG_RADIUS = 3; // cells visible around player
 
   // ── State ──
   let maze = [];
@@ -458,46 +460,74 @@
       for (let c = 0; c < SIZE; c++) {
         const x = c * CELL, y = r * CELL;
         const cell = maze[r][c];
+        const dist = Math.max(Math.abs(c - px), Math.abs(r - py)); // Chebyshev distance
+        const inFog = dist > FOG_RADIUS;
+
+        if (inFog) {
+          // Fog of war — draw dark void
+          ctx.fillStyle = '#020617';
+          ctx.fillRect(x, y, CELL, CELL);
+          continue;
+        }
+
+        // Fade cells at the edge of vision
+        const edgeFade = dist === FOG_RADIUS;
 
         if (cell === '#') {
-          // Wall
-          ctx.fillStyle = COLORS.wall;
+          ctx.fillStyle = edgeFade ? '#0f0d2a' : COLORS.wall;
           ctx.fillRect(x, y, CELL, CELL);
-          ctx.strokeStyle = COLORS.wallBorder;
-          ctx.lineWidth = 1;
-          ctx.strokeRect(x + 0.5, y + 0.5, CELL - 1, CELL - 1);
+          if (!edgeFade) {
+            ctx.strokeStyle = COLORS.wallBorder;
+            ctx.lineWidth = 1;
+            ctx.strokeRect(x + 0.5, y + 0.5, CELL - 1, CELL - 1);
+          }
         } else if (cell === 'S') {
-          ctx.fillStyle = COLORS.start;
+          ctx.fillStyle = edgeFade ? '#021f14' : COLORS.start;
           ctx.fillRect(x, y, CELL, CELL);
-          ctx.fillStyle = COLORS.startText;
-          ctx.font = `bold ${CELL * 0.5}px monospace`;
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText('S', x + CELL/2, y + CELL/2);
+          if (!edgeFade) {
+            ctx.fillStyle = COLORS.startText;
+            ctx.font = `bold ${CELL * 0.5}px monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('S', x + CELL/2, y + CELL/2);
+          }
         } else if (cell === 'G') {
-          ctx.fillStyle = COLORS.goal;
+          ctx.fillStyle = edgeFade ? '#1e0a3c' : COLORS.goal;
           ctx.fillRect(x, y, CELL, CELL);
-          ctx.fillStyle = COLORS.goalText;
-          ctx.font = `bold ${CELL * 0.5}px monospace`;
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText('G', x + CELL/2, y + CELL/2);
+          if (!edgeFade) {
+            ctx.fillStyle = COLORS.goalText;
+            ctx.font = `bold ${CELL * 0.5}px monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('G', x + CELL/2, y + CELL/2);
+          }
         } else {
-          ctx.fillStyle = COLORS.path;
+          ctx.fillStyle = edgeFade ? '#050d1a' : COLORS.path;
           ctx.fillRect(x, y, CELL, CELL);
-          ctx.strokeStyle = COLORS.grid;
-          ctx.lineWidth = 0.5;
-          ctx.strokeRect(x, y, CELL, CELL);
+          if (!edgeFade) {
+            ctx.strokeStyle = COLORS.grid;
+            ctx.lineWidth = 0.5;
+            ctx.strokeRect(x, y, CELL, CELL);
+          }
         }
       }
     }
+
+    // Radial fog gradient overlay for smooth vignette
+    const cx_ = px * CELL + CELL / 2;
+    const cy_ = py * CELL + CELL / 2;
+    const fogGrad = ctx.createRadialGradient(cx_, cy_, FOG_RADIUS * CELL * 0.6, cx_, cy_, FOG_RADIUS * CELL * 1.1);
+    fogGrad.addColorStop(0, 'rgba(2,6,23,0)');
+    fogGrad.addColorStop(1, 'rgba(2,6,23,0.92)');
+    ctx.fillStyle = fogGrad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Player
     const px_ = px * CELL + CELL/2;
     const py_ = py * CELL + CELL/2;
     const r = CELL * 0.35;
 
-    ctx.shadowBlur = 12;
+    ctx.shadowBlur = 16;
     ctx.shadowColor = COLORS.playerGlow;
     ctx.beginPath();
     ctx.arc(px_, py_, r, 0, Math.PI * 2);
