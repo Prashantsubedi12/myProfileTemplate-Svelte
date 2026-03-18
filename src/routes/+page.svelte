@@ -523,6 +523,21 @@
           </div>
         </div>
 
+        <div class="project-card">
+          <div class="project-emoji">🌀</div>
+          <h3>Maze Escape</h3>
+          <p>A 2-player competitive maze game originally written in C for college. Ported to the browser — each player races through a randomly generated maze to reach the goal in the shortest time and fewest steps.</p>
+          <div class="tags">
+            <span class="tag">C Language</span>
+            <span class="tag">JavaScript</span>
+            <span class="tag">HTML</span>
+          </div>
+          <div class="project-links">
+            <a href="/maze-escape.html" class="project-link">Play Game →</a>
+            <a href="https://github.com/Prashantsubedi12/Maze-Escape-Game" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>

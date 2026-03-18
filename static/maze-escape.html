@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maze Escape Game</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    h1 {
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      font-weight: 800;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 0.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    h1 span { color: #818cf8; }
+
+    .subtitle {
+      color: #64748b;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    /* ── SCREENS ── */
+    .screen { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 700px; }
+    .screen.active { display: flex; }
+
+    /* ── INTRO ── */
+    #intro-screen { gap: 1rem; }
+
+    .rules-card {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 1.25rem;
+      padding: 1.75rem 2rem;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .rules-card h3 {
+      color: #a5b4fc;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+    }
+
+    .rules-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .rules-card li {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      display: flex;
+      gap: 0.6rem;
+      align-items: flex-start;
+    }
+
+    .rules-card li::before {
+      content: '▸';
+      color: #818cf8;
+      flex-shrink: 0;
+      margin-top: 0.05rem;
+    }
+
+    .btn {
+      background: #4f46e5;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 0.8rem 2.5rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 0.5rem;
+    }
+
+    .btn:hover { background: #4338ca; transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #334155;
+      color: #94a3b8;
+    }
+
+    .btn-outline:hover {
+      background: transparent;
+      border-color: #818cf8;
+      color: #a5b4fc;
+    }
+
+    /* ── GAME ── */
+    #game-screen { gap: 0.75rem; }
+
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 540px;
+      padding: 0.75rem 1.25rem;
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(99,102,241,0.25);
+      border-radius: 1rem;
+    }
+
+    .hud-item { text-align: center; }
+    .hud-label { color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.2rem; }
+    .hud-value { color: #a5b4fc; font-size: 1.1rem; font-weight: 700; }
+    .hud-value.player1 { color: #34d399; }
+    .hud-value.player2 { color: #f472b6; }
+
+    canvas {
+      border-radius: 0.75rem;
+      border: 2px solid rgba(99,102,241,0.3);
+      max-width: 100%;
+      cursor: none;
+    }
+
+    .controls-hint {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      color: #475569;
+      font-size: 0.8rem;
+    }
+
+    .key {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-bottom: 3px solid #1e293b;
+      color: #94a3b8;
+      padding: 0.15rem 0.5rem;
+      border-radius: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* ── TRANSITION ── */
+    #transition-screen {
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .player-result {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 1.25rem;
+      padding: 1.5rem 2.5rem;
+      text-align: center;
+    }
+
+    .player-result .big { font-size: 3rem; margin-bottom: 0.5rem; }
+    .player-result h2 { font-size: 1.4rem; font-weight: 700; color: #fff; margin-bottom: 1rem; }
+    .stat { color: #94a3b8; font-size: 1rem; margin: 0.25rem 0; }
+    .stat span { color: #a5b4fc; font-weight: 700; }
+
+    /* ── RESULTS ── */
+    #results-screen {
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .winner-banner {
+      background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.2));
+      border: 1px solid rgba(99,102,241,0.5);
+      border-radius: 1.5rem;
+      padding: 2rem 3rem;
+      text-align: center;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .winner-banner .trophy { font-size: 3.5rem; margin-bottom: 0.5rem; }
+    .winner-banner h2 { font-size: 1.8rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; }
+    .winner-banner p { color: #94a3b8; margin-bottom: 0.25rem; }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .result-card {
+      background: rgba(30,41,59,0.7);
+      border: 1px solid rgba(51,65,85,0.5);
+      border-radius: 1.25rem;
+      padding: 1.25rem;
+      text-align: center;
+    }
+
+    .result-card.p1 { border-color: rgba(52,211,153,0.4); }
+    .result-card.p2 { border-color: rgba(244,114,182,0.4); }
+    .result-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .result-card.p1 h3 { color: #34d399; }
+    .result-card.p2 h3 { color: #f472b6; }
+    .result-card .stat { font-size: 0.85rem; }
+
+    .btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
+
+    /* ── MOBILE ── */
+    .mobile-controls {
+      display: none;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+
+    .dpad {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      gap: 0.3rem;
+    }
+
+    .dpad-btn {
+      width: 52px;
+      height: 52px;
+      background: rgba(30,41,59,0.8);
+      border: 1px solid rgba(99,102,241,0.35);
+      border-radius: 0.75rem;
+      color: #a5b4fc;
+      font-size: 1.25rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.1s;
+    }
+
+    .dpad-btn:active { background: rgba(99,102,241,0.4); }
+    .dpad-btn.up    { grid-column: 2; grid-row: 1; }
+    .dpad-btn.left  { grid-column: 1; grid-row: 2; }
+    .dpad-btn.center { grid-column: 2; grid-row: 2; background: rgba(15,23,42,0.8); border-color: transparent; cursor: default; }
+    .dpad-btn.right { grid-column: 3; grid-row: 2; }
+    .dpad-btn.down  { grid-column: 2; grid-row: 3; }
+
+    @media (max-width: 600px) {
+      .mobile-controls { display: flex; flex-direction: column; align-items: center; }
+      .controls-hint { display: none; }
+    }
+
+    @media (pointer: coarse) {
+      .mobile-controls { display: flex; flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- INTRO -->
+<div id="intro-screen" class="screen active">
+  <h1>Maze <span>Escape</span></h1>
+  <p class="subtitle">2-Player competitive maze game</p>
+
+  <div class="rules-card">
+    <h3>How to Play</h3>
+    <ul>
+      <li>Move with <strong>W A S D</strong> or <strong>Arrow Keys</strong></li>
+      <li>Navigate from <strong>S</strong> (start) to <strong>G</strong> (goal)</li>
+      <li>Walls <strong>#</strong> block movement — no steps wasted on walls</li>
+      <li>Player 1 goes first, then Player 2 gets the same maze</li>
+      <li>Fastest time wins — steps as a tiebreaker!</li>
+    </ul>
+  </div>
+
+  <button class="btn" onclick="startGame()">Start Game</button>
+  <a href="/" style="color:#475569;font-size:0.85rem;text-decoration:none;margin-top:0.25rem;">← Back to Portfolio</a>
+</div>
+
+<!-- GAME -->
+<div id="game-screen" class="screen">
+  <h1 id="game-title">Player <span id="player-num">1</span>'s Turn</h1>
+  <p class="subtitle" id="game-sub">Find the goal as fast as you can!</p>
+
+  <div class="hud">
+    <div class="hud-item">
+      <div class="hud-label">Player</div>
+      <div class="hud-value" id="hud-player">P1</div>
+    </div>
+    <div class="hud-item">
+      <div class="hud-label">Time</div>
+      <div class="hud-value" id="hud-time">0s</div>
+    </div>
+    <div class="hud-item">
+      <div class="hud-label">Steps</div>
+      <div class="hud-value" id="hud-steps">0</div>
+    </div>
+    <div class="hud-item">
+      <div class="hud-label">Best</div>
+      <div class="hud-value" id="hud-best">—</div>
+    </div>
+  </div>
+
+  <canvas id="mazeCanvas"></canvas>
+
+  <div class="controls-hint">
+    <span><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span></span>
+    or
+    <span><span class="key">↑</span><span class="key">←</span><span class="key">↓</span><span class="key">→</span></span>
+    to move
+  </div>
+
+  <!-- Mobile D-pad -->
+  <div class="mobile-controls">
+    <div class="dpad">
+      <button class="dpad-btn up"    ontouchstart="handleDpad('up')"    onmousedown="handleDpad('up')">↑</button>
+      <button class="dpad-btn left"  ontouchstart="handleDpad('left')"  onmousedown="handleDpad('left')">←</button>
+      <div   class="dpad-btn center"></div>
+      <button class="dpad-btn right" ontouchstart="handleDpad('right')" onmousedown="handleDpad('right')">→</button>
+      <button class="dpad-btn down"  ontouchstart="handleDpad('down')"  onmousedown="handleDpad('down')">↓</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSITION (between players) -->
+<div id="transition-screen" class="screen">
+  <h1>Player <span style="color:#34d399">1</span> Finished!</h1>
+  <div class="player-result">
+    <div class="big">🏃</div>
+    <h2>Good Run!</h2>
+    <div class="stat">Time: <span id="p1-time">—</span></div>
+    <div class="stat">Steps: <span id="p1-steps">—</span></div>
+  </div>
+  <p style="color:#64748b;font-size:0.9rem;">Player 2 — get ready!</p>
+  <button class="btn" onclick="startPlayer2()">Start Player 2</button>
+</div>
+
+<!-- RESULTS -->
+<div id="results-screen" class="screen">
+  <h1>Results</h1>
+
+  <div class="winner-banner">
+    <div class="trophy" id="trophy">🏆</div>
+    <h2 id="winner-text">Player 1 Wins!</h2>
+    <p id="winner-reason"></p>
+  </div>
+
+  <div class="results-grid">
+    <div class="result-card p1">
+      <h3>Player 1</h3>
+      <div class="stat">Time: <span id="res-p1-time">—</span></div>
+      <div class="stat">Steps: <span id="res-p1-steps">—</span></div>
+    </div>
+    <div class="result-card p2">
+      <h3>Player 2</h3>
+      <div class="stat">Time: <span id="res-p2-time">—</span></div>
+      <div class="stat">Steps: <span id="res-p2-steps">—</span></div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn" onclick="startGame()">Play Again</button>
+    <a href="/" class="btn btn-outline" style="text-decoration:none;display:flex;align-items:center;">Back to Portfolio</a>
+  </div>
+</div>
+
+<script>
+  // ── Constants ──
+  const SIZE = 15;
+  const WALL_RATE = 30;
+  const CELL = 34; // px per cell
+
+  // ── State ──
+  let maze = [];
+  let px, py;
+  let currentPlayer = 0;
+  let startTime = 0;
+  let timerInterval = null;
+  let steps = 0;
+  let results = [null, null]; // {time, steps} per player
+
+  // ── Canvas ──
+  const canvas = document.getElementById('mazeCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width  = SIZE * CELL;
+  canvas.height = SIZE * CELL;
+
+  // ── Maze Generation ──
+  function makeMaze() {
+    let m;
+    do {
+      m = Array.from({length: SIZE}, () => Array(SIZE).fill('.'));
+      // outer walls
+      for (let i = 0; i < SIZE; i++) {
+        m[0][i] = m[SIZE-1][i] = m[i][0] = m[i][SIZE-1] = '#';
+      }
+      // random inner walls
+      for (let r = 1; r < SIZE-1; r++) {
+        for (let c = 1; c < SIZE-1; c++) {
+          if ((r === 1 && c === 1) || (r === SIZE-2 && c === SIZE-2)) continue;
+          if (Math.random() * 100 < WALL_RATE) m[r][c] = '#';
+        }
+      }
+      m[1][1]           = 'S';
+      m[SIZE-2][SIZE-2] = 'G';
+    } while (!checkPath(1, 1, m));
+    return m;
+  }
+
+  function checkPath(x, y, m) {
+    const visited = Array.from({length: SIZE}, () => Array(SIZE).fill(false));
+    function dfs(x, y) {
+      if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) return false;
+      if (m[y][x] === '#') return false;
+      if (visited[y][x]) return false;
+      if (m[y][x] === 'G') return true;
+      visited[y][x] = true;
+      return dfs(x, y-1) || dfs(x, y+1) || dfs(x-1, y) || dfs(x+1, y);
+    }
+    return dfs(x, y);
+  }
+
+  // ── Rendering ──
+  const COLORS = {
+    wall:   '#1e1b4b',
+    wallBorder: '#312e81',
+    path:   '#0f172a',
+    start:  '#065f46',
+    startText: '#34d399',
+    goal:   '#7c3aed',
+    goalText: '#c4b5fd',
+    player: '#f59e0b',
+    playerGlow: 'rgba(245,158,11,0.4)',
+    grid:   'rgba(30,27,75,0.4)',
+  };
+
+  function drawMaze() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let r = 0; r < SIZE; r++) {
+      for (let c = 0; c < SIZE; c++) {
+        const x = c * CELL, y = r * CELL;
+        const cell = maze[r][c];
+
+        if (cell === '#') {
+          // Wall
+          ctx.fillStyle = COLORS.wall;
+          ctx.fillRect(x, y, CELL, CELL);
+          ctx.strokeStyle = COLORS.wallBorder;
+          ctx.lineWidth = 1;
+          ctx.strokeRect(x + 0.5, y + 0.5, CELL - 1, CELL - 1);
+        } else if (cell === 'S') {
+          ctx.fillStyle = COLORS.start;
+          ctx.fillRect(x, y, CELL, CELL);
+          ctx.fillStyle = COLORS.startText;
+          ctx.font = `bold ${CELL * 0.5}px monospace`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('S', x + CELL/2, y + CELL/2);
+        } else if (cell === 'G') {
+          ctx.fillStyle = COLORS.goal;
+          ctx.fillRect(x, y, CELL, CELL);
+          ctx.fillStyle = COLORS.goalText;
+          ctx.font = `bold ${CELL * 0.5}px monospace`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('G', x + CELL/2, y + CELL/2);
+        } else {
+          ctx.fillStyle = COLORS.path;
+          ctx.fillRect(x, y, CELL, CELL);
+          ctx.strokeStyle = COLORS.grid;
+          ctx.lineWidth = 0.5;
+          ctx.strokeRect(x, y, CELL, CELL);
+        }
+      }
+    }
+
+    // Player
+    const px_ = px * CELL + CELL/2;
+    const py_ = py * CELL + CELL/2;
+    const r = CELL * 0.35;
+
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = COLORS.playerGlow;
+    ctx.beginPath();
+    ctx.arc(px_, py_, r, 0, Math.PI * 2);
+    ctx.fillStyle = COLORS.player;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Player label
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${CELL * 0.4}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`P${currentPlayer + 1}`, px_, py_);
+  }
+
+  // ── HUD ──
+  function updateHUD() {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    document.getElementById('hud-time').textContent  = elapsed + 's';
+    document.getElementById('hud-steps').textContent = steps;
+
+    if (results[0]) {
+      document.getElementById('hud-best').textContent = results[0].time + 's';
+    }
+  }
+
+  // ── Game Flow ──
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function startGame() {
+    currentPlayer = 0;
+    results = [null, null];
+    beginTurn();
+  }
+
+  function beginTurn() {
+    maze = makeMaze();
+    px = 1; py = 1;
+    steps = 0;
+    startTime = Date.now();
+
+    // Update game screen labels
+    document.getElementById('player-num').textContent = currentPlayer + 1;
+    document.getElementById('player-num').style.color = currentPlayer === 0 ? '#34d399' : '#f472b6';
+    document.getElementById('hud-player').textContent = 'P' + (currentPlayer + 1);
+    document.getElementById('hud-player').className   = 'hud-value player' + (currentPlayer + 1);
+    document.getElementById('hud-best').textContent = results[0] ? results[0].time + 's' : '—';
+
+    clearInterval(timerInterval);
+    timerInterval = setInterval(updateHUD, 200);
+
+    showScreen('game-screen');
+    drawMaze();
+  }
+
+  function move(dx, dy) {
+    const nx = px + dx, ny = py + dy;
+    if (nx < 0 || ny < 0 || nx >= SIZE || ny >= SIZE) return;
+    if (maze[ny][nx] === '#') return;
+    px = nx; py = ny;
+    steps++;
+    drawMaze();
+    updateHUD();
+    checkGoal();
+  }
+
+  function checkGoal() {
+    if (px === SIZE-2 && py === SIZE-2) {
+      clearInterval(timerInterval);
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      results[currentPlayer] = { time: elapsed, steps: steps };
+
+      if (currentPlayer === 0) {
+        // Show transition
+        document.getElementById('p1-time').textContent  = elapsed + 's';
+        document.getElementById('p1-steps').textContent = steps + ' steps';
+        showScreen('transition-screen');
+      } else {
+        showResults();
+      }
+    }
+  }
+
+  function startPlayer2() {
+    currentPlayer = 1;
+    beginTurn();
+  }
+
+  function showResults() {
+    const p1 = results[0], p2 = results[1];
+
+    document.getElementById('res-p1-time').textContent  = p1 ? p1.time + 's' : 'DNF';
+    document.getElementById('res-p1-steps').textContent = p1 ? p1.steps + ' steps' : '—';
+    document.getElementById('res-p2-time').textContent  = p2 ? p2.time + 's' : 'DNF';
+    document.getElementById('res-p2-steps').textContent = p2 ? p2.steps + ' steps' : '—';
+
+    let winnerText, reason, trophy;
+
+    if (!p1 && !p2) {
+      winnerText = 'Draw!'; reason = 'Both players did not finish.'; trophy = '🤝';
+    } else if (!p1) {
+      winnerText = 'Player 2 Wins!'; reason = 'Player 1 did not finish.'; trophy = '🏆';
+    } else if (!p2) {
+      winnerText = 'Player 1 Wins!'; reason = 'Player 2 did not finish.'; trophy = '🏆';
+    } else if (p1.time < p2.time) {
+      winnerText = 'Player 1 Wins!'; reason = `Faster time: ${p1.time}s vs ${p2.time}s`; trophy = '🏆';
+    } else if (p2.time < p1.time) {
+      winnerText = 'Player 2 Wins!'; reason = `Faster time: ${p2.time}s vs ${p1.time}s`; trophy = '🏆';
+    } else if (p1.steps < p2.steps) {
+      winnerText = 'Player 1 Wins!'; reason = `Same time — fewer steps: ${p1.steps} vs ${p2.steps}`; trophy = '🏆';
+    } else if (p2.steps < p1.steps) {
+      winnerText = 'Player 2 Wins!'; reason = `Same time — fewer steps: ${p2.steps} vs ${p1.steps}`; trophy = '🏆';
+    } else {
+      winnerText = "It's a Draw!"; reason = `Equal time (${p1.time}s) and steps (${p1.steps})`; trophy = '🤝';
+    }
+
+    document.getElementById('trophy').textContent       = trophy;
+    document.getElementById('winner-text').textContent  = winnerText;
+    document.getElementById('winner-reason').textContent = reason;
+
+    showScreen('results-screen');
+  }
+
+  // ── Input ──
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('game-screen').classList.contains('active')) return;
+    e.preventDefault();
+    switch (e.key) {
+      case 'w': case 'W': case 'ArrowUp':    move( 0, -1); break;
+      case 's': case 'S': case 'ArrowDown':  move( 0,  1); break;
+      case 'a': case 'A': case 'ArrowLeft':  move(-1,  0); break;
+      case 'd': case 'D': case 'ArrowRight': move( 1,  0); break;
+    }
+  });
+
+  function handleDpad(dir) {
+    if (!document.getElementById('game-screen').classList.contains('active')) return;
+    switch (dir) {
+      case 'up':    move( 0, -1); break;
+      case 'down':  move( 0,  1); break;
+      case 'left':  move(-1,  0); break;
+      case 'right': move( 1,  0); break;
+    }
+  }
+</script>
+</body>
+</html>
