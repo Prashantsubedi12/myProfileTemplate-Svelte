@@ -538,6 +538,21 @@
           </div>
         </div>
 
+        <div class="project-card">
+          <div class="project-emoji">🎨</div>
+          <h3>Mosaic Camera</h3>
+          <p>A webcam interactive art tool built in Processing for 情報処理基礎実験. Ported to the browser — hold the mouse or press any key to shatter your live camera feed into mosaic blocks. Drag to control block size and color tone.</p>
+          <div class="tags">
+            <span class="tag">Processing</span>
+            <span class="tag">JavaScript</span>
+            <span class="tag">WebRTC</span>
+          </div>
+          <div class="project-links">
+            <a href="/mosaic-cam.html" class="project-link">Try It →</a>
+            <a href="https://github.com/Prashantsubedi12/Processing-mosaic-" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>

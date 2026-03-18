@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mosaic Camera</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      gap: 1rem;
+    }
+
+    h1 {
+      font-size: clamp(1.5rem, 5vw, 2.2rem);
+      font-weight: 800;
+      color: #fff;
+      text-align: center;
+      letter-spacing: -0.02em;
+    }
+
+    h1 span { color: #818cf8; }
+
+    /* ── SCREENS ── */
+    .screen { display: none; flex-direction: column; align-items: center; gap: 1rem; width: 100%; }
+    .screen.active { display: flex; }
+
+    /* ── INTRO ── */
+    .info-card {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 1.25rem;
+      padding: 1.75rem 2rem;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .info-card h3 {
+      color: #a5b4fc;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+    }
+
+    .info-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .info-card li {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      display: flex;
+      gap: 0.6rem;
+      align-items: flex-start;
+    }
+
+    .info-card li::before {
+      content: '▸';
+      color: #818cf8;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      background: #4f46e5;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 0.8rem 2.5rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn:hover { background: #4338ca; transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #334155;
+      color: #94a3b8;
+    }
+
+    .btn-outline:hover {
+      background: transparent;
+      border-color: #818cf8;
+      color: #a5b4fc;
+    }
+
+    /* ── CAM SCREEN ── */
+    #cam-screen { gap: 0.75rem; }
+
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 640px;
+      padding: 0.6rem 1.25rem;
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(99,102,241,0.25);
+      border-radius: 1rem;
+      gap: 1rem;
+    }
+
+    .hud-item { text-align: center; }
+    .hud-label { color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.15rem; }
+    .hud-value { color: #a5b4fc; font-size: 1rem; font-weight: 700; }
+    .hud-value.active { color: #34d399; }
+    .hud-value.inactive { color: #475569; }
+
+    .canvas-wrap {
+      position: relative;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      border: 2px solid rgba(99,102,241,0.3);
+      max-width: 100%;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    canvas { display: block; max-width: 100%; }
+
+    /* Hint overlay shown initially */
+    .canvas-hint {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: rgba(2,6,23,0.55);
+      color: #94a3b8;
+      font-size: 0.9rem;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+
+    .canvas-hint.hidden { opacity: 0; }
+
+    .canvas-hint .hint-icon { font-size: 2.5rem; }
+
+    .hint-bar {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      color: #475569;
+      font-size: 0.78rem;
+    }
+
+    .hint-bar span {
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 0.2rem 0.65rem;
+      border-radius: 0.5rem;
+    }
+
+    /* ── ERROR ── */
+    #error-screen { text-align: center; gap: 1rem; }
+    .error-card {
+      background: rgba(127,29,29,0.3);
+      border: 1px solid rgba(239,68,68,0.4);
+      border-radius: 1.25rem;
+      padding: 1.5rem 2rem;
+      max-width: 420px;
+      color: #fca5a5;
+    }
+    .error-card h3 { color: #f87171; margin-bottom: 0.5rem; }
+
+    /* Mobile touch strip */
+    .touch-strip {
+      display: none;
+      width: 100%;
+      max-width: 640px;
+      height: 52px;
+      background: rgba(30,41,59,0.6);
+      border: 1px solid rgba(99,102,241,0.25);
+      border-radius: 1rem;
+      align-items: center;
+      justify-content: center;
+      color: #475569;
+      font-size: 0.8rem;
+      gap: 0.5rem;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: none;
+    }
+
+    .touch-strip.pressed {
+      background: rgba(99,102,241,0.2);
+      border-color: rgba(99,102,241,0.5);
+      color: #a5b4fc;
+    }
+
+    @media (pointer: coarse) {
+      .touch-strip { display: flex; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- INTRO -->
+<div id="intro-screen" class="screen active">
+  <h1>Mosaic <span>Camera</span></h1>
+  <p style="color:#64748b;font-size:0.9rem;text-align:center">An interactive webcam mosaic effect</p>
+
+  <div class="info-card">
+    <h3>How It Works</h3>
+    <ul>
+      <li>Your webcam feed plays normally</li>
+      <li><strong>Click &amp; hold</strong> (or press any key) to activate the mosaic</li>
+      <li>Drag <strong>left ↔ right</strong> to change mosaic block size</li>
+      <li>Drag <strong>up ↕ down</strong> to shift the color tone</li>
+      <li>Release to return to normal view</li>
+    </ul>
+  </div>
+
+  <button class="btn" id="start-btn">Allow Camera &amp; Start</button>
+  <a href="/" style="color:#475569;font-size:0.85rem;text-decoration:none;">← Back to Portfolio</a>
+</div>
+
+<!-- CAM -->
+<div id="cam-screen" class="screen">
+  <h1>Mosaic <span>Camera</span></h1>
+
+  <div class="hud">
+    <div class="hud-item">
+      <div class="hud-label">Mode</div>
+      <div class="hud-value" id="hud-mode">Normal</div>
+    </div>
+    <div class="hud-item">
+      <div class="hud-label">Block Size</div>
+      <div class="hud-value" id="hud-block">—</div>
+    </div>
+    <div class="hud-item">
+      <div class="hud-label">Color Shift</div>
+      <div class="hud-value" id="hud-color">—</div>
+    </div>
+  </div>
+
+  <div class="canvas-wrap" id="canvas-wrap">
+    <canvas id="mainCanvas"></canvas>
+    <div class="canvas-hint" id="canvas-hint">
+      <div class="hint-icon">👆</div>
+      <div>Click &amp; drag to activate mosaic</div>
+    </div>
+  </div>
+
+  <div class="hint-bar">
+    <span>🖱 Hold &amp; drag left/right → block size</span>
+    <span>🖱 Drag up/down → color shift</span>
+    <span>⌨ Any key → mosaic</span>
+  </div>
+
+  <!-- Mobile hold strip -->
+  <div class="touch-strip" id="touch-strip">
+    <span>👆 Hold here + drag on canvas for mosaic</span>
+  </div>
+
+  <a href="/" style="color:#475569;font-size:0.85rem;text-decoration:none;">← Back to Portfolio</a>
+</div>
+
+<!-- ERROR -->
+<div id="error-screen" class="screen">
+  <h1>Camera <span>Error</span></h1>
+  <div class="error-card">
+    <h3>Could not access camera</h3>
+    <p id="error-msg">Please allow camera permission and try again.</p>
+  </div>
+  <button class="btn" onclick="location.reload()">Try Again</button>
+  <a href="/" style="color:#475569;font-size:0.85rem;text-decoration:none;">← Back to Portfolio</a>
+</div>
+
+<!-- hidden video element for camera feed -->
+<video id="camVideo" autoplay playsinline muted style="display:none"></video>
+
+<script>
+  // ── DOM refs ──
+  const introScreen  = document.getElementById('intro-screen');
+  const camScreen    = document.getElementById('cam-screen');
+  const errorScreen  = document.getElementById('error-screen');
+  const startBtn     = document.getElementById('start-btn');
+  const canvas       = document.getElementById('mainCanvas');
+  const ctx          = canvas.getContext('2d', { willReadFrequently: true });
+  const video        = document.getElementById('camVideo');
+  const canvasHint   = document.getElementById('canvas-hint');
+  const hudMode      = document.getElementById('hud-mode');
+  const hudBlock     = document.getElementById('hud-block');
+  const hudColor     = document.getElementById('hud-color');
+  const touchStrip   = document.getElementById('touch-strip');
+  const canvasWrap   = document.getElementById('canvas-wrap');
+
+  // ── State ──
+  let mousePressed = false;
+  let keyHeld      = false;
+  let mouseX       = 0;
+  let mouseY       = 0;
+  let hintVisible  = true;
+  let animId       = null;
+
+  // Canvas size — matches original 16:9 feel, capped for screens
+  const CAM_W = 640;
+  const CAM_H = 360;
+
+  function showScreen(id) {
+    [introScreen, camScreen, errorScreen].forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  // ── Start ──
+  startBtn.addEventListener('click', async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
+        audio: false
+      });
+      video.srcObject = stream;
+      await video.play();
+
+      canvas.width  = CAM_W;
+      canvas.height = CAM_H;
+
+      // Match canvas display size responsively
+      const maxW = Math.min(640, window.innerWidth - 32);
+      canvas.style.width  = maxW + 'px';
+      canvas.style.height = (maxW * CAM_H / CAM_W) + 'px';
+
+      showScreen('cam-screen');
+      loop();
+    } catch (err) {
+      document.getElementById('error-msg').textContent = err.message || 'Permission denied.';
+      showScreen('error-screen');
+    }
+  });
+
+  // ── Main loop ──
+  function loop() {
+    render();
+    animId = requestAnimationFrame(loop);
+  }
+
+  // Offscreen canvas for reading pixels
+  const offCanvas = document.createElement('canvas');
+  offCanvas.width  = CAM_W;
+  offCanvas.height = CAM_H;
+  const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+
+  function render() {
+    if (video.readyState < 2) return;
+
+    // Draw current video frame to offscreen for pixel reading
+    offCtx.drawImage(video, 0, 0, CAM_W, CAM_H);
+
+    const active = mousePressed || keyHeld;
+
+    if (!active) {
+      // Normal feed
+      ctx.drawImage(video, 0, 0, CAM_W, CAM_H);
+      updateHUD(false, 0, 0);
+    } else {
+      // Mosaic effect — mirror original Processing logic
+      const mosaicSize = Math.max(2, Math.round((mouseX / CAM_W) * 98 + 2)); // map(mouseX, 0, width, 2, 100)
+      const colorIntensity = mouseY / CAM_H;                                  // map(mouseY, 0, height, 0, 1)
+
+      const pixelData = offCtx.getImageData(0, 0, CAM_W, CAM_H);
+      const data = pixelData.data;
+
+      ctx.clearRect(0, 0, CAM_W, CAM_H);
+
+      for (let y = 0; y < CAM_H; y += mosaicSize) {
+        for (let x = 0; x < CAM_W; x += mosaicSize) {
+          // Sample pixel at top-left of block (mirrors cam.get(x, y))
+          const idx = (y * CAM_W + x) * 4;
+          let r = data[idx];
+          let g = data[idx + 1];
+          let b = data[idx + 2];
+
+          // Color shift: boost red and blue channels based on mouseY
+          r = Math.min(255, Math.round(r * (1 + colorIntensity * 0.5)));
+          b = Math.min(255, Math.round(b * (1 + colorIntensity * 0.5)));
+
+          ctx.fillStyle = `rgba(${r},${g},${b},0.88)`;
+          ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+          ctx.lineWidth = 1;
+          ctx.fillRect(x, y, mosaicSize, mosaicSize);
+          ctx.strokeRect(x + 0.5, y + 0.5, mosaicSize - 1, mosaicSize - 1);
+        }
+      }
+
+      updateHUD(true, mosaicSize, colorIntensity);
+    }
+  }
+
+  function updateHUD(active, blockSize, intensity) {
+    if (active) {
+      hudMode.textContent  = 'Mosaic';
+      hudMode.className    = 'hud-value active';
+      hudBlock.textContent = blockSize + 'px';
+      hudBlock.className   = 'hud-value active';
+      hudColor.textContent = Math.round(intensity * 100) + '%';
+      hudColor.className   = 'hud-value active';
+    } else {
+      hudMode.textContent  = 'Normal';
+      hudMode.className    = 'hud-value inactive';
+      hudBlock.textContent = '—';
+      hudBlock.className   = 'hud-value inactive';
+      hudColor.textContent = '—';
+      hudColor.className   = 'hud-value inactive';
+    }
+  }
+
+  function hideHint() {
+    if (hintVisible) {
+      canvasHint.classList.add('hidden');
+      hintVisible = false;
+    }
+  }
+
+  // ── Mouse events on canvas ──
+  function getCanvasPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = CAM_W / rect.width;
+    const scaleY = CAM_H / rect.height;
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top)  * scaleY
+    };
+  }
+
+  canvas.addEventListener('mousedown', e => {
+    mousePressed = true;
+    const p = getCanvasPos(e);
+    mouseX = p.x; mouseY = p.y;
+    hideHint();
+  });
+
+  canvas.addEventListener('mousemove', e => {
+    const p = getCanvasPos(e);
+    mouseX = p.x; mouseY = p.y;
+  });
+
+  canvas.addEventListener('mouseup',   () => { mousePressed = false; });
+  canvas.addEventListener('mouseleave',() => { mousePressed = false; });
+
+  // ── Touch events on canvas ──
+  function getTouchCanvasPos(touch) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = CAM_W / rect.width;
+    const scaleY = CAM_H / rect.height;
+    return {
+      x: (touch.clientX - rect.left) * scaleX,
+      y: (touch.clientY - rect.top)  * scaleY
+    };
+  }
+
+  canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    mousePressed = true;
+    const p = getTouchCanvasPos(e.touches[0]);
+    mouseX = p.x; mouseY = p.y;
+    hideHint();
+  }, { passive: false });
+
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const p = getTouchCanvasPos(e.touches[0]);
+    mouseX = p.x; mouseY = p.y;
+  }, { passive: false });
+
+  canvas.addEventListener('touchend',   () => { mousePressed = false; });
+
+  // ── Mobile touch strip (hold here + drag on canvas) ──
+  touchStrip.addEventListener('touchstart', e => {
+    e.preventDefault();
+    mousePressed = true;
+    touchStrip.classList.add('pressed');
+    hideHint();
+  }, { passive: false });
+
+  touchStrip.addEventListener('touchend', () => {
+    mousePressed = false;
+    touchStrip.classList.remove('pressed');
+  });
+
+  touchStrip.addEventListener('mousedown', () => {
+    mousePressed = true;
+    touchStrip.classList.add('pressed');
+    hideHint();
+  });
+
+  touchStrip.addEventListener('mouseup', () => {
+    mousePressed = false;
+    touchStrip.classList.remove('pressed');
+  });
+
+  // ── Keyboard events ──
+  document.addEventListener('keydown', e => {
+    if (document.getElementById('cam-screen').classList.contains('active')) {
+      keyHeld = true;
+      hideHint();
+    }
+  });
+
+  document.addEventListener('keyup', () => { keyHeld = false; });
+
+  // Track mouse position globally for keyboard-triggered mosaic
+  document.addEventListener('mousemove', e => {
+    if (!mousePressed) {
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width > 0) {
+        const scaleX = CAM_W / rect.width;
+        const scaleY = CAM_H / rect.height;
+        mouseX = (e.clientX - rect.left) * scaleX;
+        mouseY = (e.clientY - rect.top)  * scaleY;
+      }
+    }
+  });
+
+  // Responsive resize
+  window.addEventListener('resize', () => {
+    if (canvas.width > 0) {
+      const maxW = Math.min(640, window.innerWidth - 32);
+      canvas.style.width  = maxW + 'px';
+      canvas.style.height = (maxW * CAM_H / CAM_W) + 'px';
+    }
+  });
+</script>
+</body>
+</html>
