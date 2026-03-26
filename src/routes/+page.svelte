@@ -7,7 +7,7 @@
 
   :global(body) {
     font-family: 'Segoe UI', system-ui, sans-serif;
-    background-color: #0f172a;
+    background-color: #0A1024;
     color: #e2e8f0;
   }
 
@@ -27,15 +27,15 @@
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    border: 3px solid rgba(129, 140, 248, 0.4);
-    background: rgba(30, 27, 75, 0.6);
+    border: 3px solid rgba(0, 102, 255, 0.4);
+    background: rgba(10, 16, 36, 0.6);
     object-fit: cover;
     transition: transform 0.3s, border-color 0.3s, opacity 0.3s;
   }
 
   .avatar-wrapper:hover .avatar {
     transform: scale(1.08);
-    border-color: rgba(129, 140, 248, 0.9);
+    border-color: rgba(0, 102, 255, 0.9);
   }
 
   .greetings {
@@ -58,9 +58,9 @@
   }
 
   .greetings span {
-    background: rgba(30, 27, 75, 0.95);
-    border: 1px solid rgba(129, 140, 248, 0.4);
-    color: #a5b4fc;
+    background: rgba(10, 16, 36, 0.95);
+    border: 1px solid rgba(0, 102, 255, 0.4);
+    color: #4D94FF;
     font-size: 0.85rem;
     font-weight: 600;
     padding: 0.3rem 0.85rem;
@@ -77,14 +77,14 @@
       align-items: center;
       text-align: center;
       padding: 2rem;
-      background: radial-gradient(ellipse at center, #1e1b4b 0%, #0f172a 70%);
+      background: radial-gradient(ellipse at center, #0D1A40 0%, #0A1024 70%);
     }
 
     .hero-badge {
       display: inline-block;
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(129, 140, 248, 0.3);
-      color: #a5b4fc;
+      background: rgba(0, 102, 255, 0.12);
+      border: 1px solid rgba(0, 102, 255, 0.35);
+      color: #4D94FF;
       font-size: 0.85rem;
       padding: 0.4rem 1rem;
       border-radius: 999px;
@@ -101,7 +101,7 @@
     }
 
     .hero h1 span {
-      color: #818cf8;
+      color: #0066FF;
     }
 
     .hero .subtitle {
@@ -126,7 +126,7 @@
     }
 
     .btn-primary {
-      background: #4f46e5;
+      background: #0066FF;
       color: #fff;
       font-weight: 600;
       padding: 0.75rem 1.75rem;
@@ -135,11 +135,11 @@
     }
 
     .btn-primary:hover {
-      background: #4338ca;
+      background: #0052CC;
     }
 
     .btn-outline {
-      border: 1px solid #334155;
+      border: 1px solid rgba(0, 102, 255, 0.3);
       color: #94a3b8;
       font-weight: 600;
       padding: 0.75rem 1.75rem;
@@ -148,8 +148,8 @@
     }
 
     .btn-outline:hover {
-      border-color: #818cf8;
-      color: #a5b4fc;
+      border-color: #0066FF;
+      color: #4D94FF;
     }
 
     /* ── SECTIONS ── */
@@ -180,7 +180,7 @@
 
     /* ── PROJECTS ── */
     #projects {
-      background: #0f172a;
+      background: #0A1024;
     }
 
     .projects-grid {
@@ -190,8 +190,8 @@
     }
 
     .project-card {
-      background: rgba(30, 41, 59, 0.6);
-      border: 1px solid rgba(51, 65, 85, 0.5);
+      background: rgba(10, 20, 45, 0.6);
+      border: 1px solid rgba(0, 60, 150, 0.3);
       border-radius: 1.25rem;
       padding: 2rem;
       transition: transform 0.25s, border-color 0.25s;
@@ -199,7 +199,7 @@
 
     .project-card:hover {
       transform: translateY(-4px);
-      border-color: rgba(99, 102, 241, 0.5);
+      border-color: rgba(0, 102, 255, 0.55);
     }
 
     .project-emoji {
@@ -229,9 +229,9 @@
     }
 
     .tag {
-      background: rgba(49, 46, 129, 0.5);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      color: #a5b4fc;
+      background: rgba(0, 50, 150, 0.35);
+      border: 1px solid rgba(0, 102, 255, 0.3);
+      color: #4D94FF;
       font-size: 0.75rem;
       padding: 0.25rem 0.75rem;
       border-radius: 999px;
@@ -240,9 +240,9 @@
     .first-badge {
       font-size: 0.65rem;
       font-weight: 600;
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(129, 140, 248, 0.3);
-      color: #a5b4fc;
+      background: rgba(0, 102, 255, 0.12);
+      border: 1px solid rgba(0, 102, 255, 0.3);
+      color: #4D94FF;
       padding: 0.15rem 0.55rem;
       border-radius: 999px;
       vertical-align: middle;
@@ -250,7 +250,7 @@
     }
 
     .project-link {
-      color: #818cf8;
+      color: #0066FF;
       font-size: 0.9rem;
       font-weight: 600;
       display: inline-flex;
@@ -260,7 +260,7 @@
     }
 
     .project-link:hover {
-      color: #a5b4fc;
+      color: #4D94FF;
     }
 
     .project-links {
@@ -270,7 +270,7 @@
 
     /* ── ABOUT ── */
     #about {
-      background: #020617;
+      background: #060C18;
     }
 
     .about-grid {
@@ -293,7 +293,7 @@
     }
 
     .about-text p span {
-      color: #a5b4fc;
+      color: #4D94FF;
       font-weight: 600;
     }
 
@@ -312,8 +312,8 @@
     }
 
     .skill-chip {
-      background: #1e293b;
-      border: 1px solid #334155;
+      background: #0D1A3A;
+      border: 1px solid #0F2555;
       color: #cbd5e1;
       padding: 0.45rem 1rem;
       border-radius: 0.75rem;
@@ -323,13 +323,13 @@
     }
 
     .skill-chip:hover {
-      border-color: #6366f1;
-      color: #a5b4fc;
+      border-color: #0066FF;
+      color: #4D94FF;
     }
 
     .focus-card {
-      background: rgba(30, 41, 59, 0.5);
-      border: 1px solid #1e293b;
+      background: rgba(10, 20, 45, 0.5);
+      border: 1px solid #0D1A3A;
       border-radius: 1rem;
       padding: 1.5rem;
     }
@@ -356,13 +356,13 @@
 
     .focus-card li::before {
       content: '▸';
-      color: #818cf8;
+      color: #0066FF;
       flex-shrink: 0;
     }
 
     /* ── CONTACT ── */
     #contact {
-      background: #0f172a;
+      background: #0A1024;
     }
 
     .contact-grid {
@@ -374,8 +374,8 @@
     }
 
     .contact-card {
-      background: rgba(30, 41, 59, 0.6);
-      border: 1px solid rgba(51, 65, 85, 0.5);
+      background: rgba(10, 20, 45, 0.6);
+      border: 1px solid rgba(0, 60, 150, 0.3);
       border-radius: 1.25rem;
       padding: 1.75rem 1.25rem;
       text-align: center;
@@ -386,7 +386,7 @@
       transform: translateY(-3px);
     }
 
-    .contact-card.email:hover  { border-color: rgba(99, 102, 241, 0.6); }
+    .contact-card.email:hover  { border-color: rgba(0, 102, 255, 0.6); }
     .contact-card.insta:hover  { border-color: rgba(236, 72, 153, 0.6); }
     .contact-card.fb:hover     { border-color: rgba(59, 130, 246, 0.6); }
     .contact-card.gh:hover     { border-color: rgba(255, 255, 255, 0.4); }
@@ -403,7 +403,7 @@
       height: 2rem;
     }
 
-    .contact-card.email .icon svg  { color: #a5b4fc; }
+    .contact-card.email .icon svg  { color: #4D94FF; }
     .contact-card.insta .icon svg  { color: #f9a8d4; }
     .contact-card.fb .icon svg     { color: #93c5fd; }
     .contact-card.gh .icon svg     { color: #e2e8f0; }
@@ -421,15 +421,15 @@
       word-break: break-all;
     }
 
-    .contact-card.email:hover .value  { color: #a5b4fc; }
+    .contact-card.email:hover .value  { color: #4D94FF; }
     .contact-card.insta:hover .value  { color: #f9a8d4; }
     .contact-card.fb:hover .value     { color: #93c5fd; }
     .contact-card.gh:hover .value     { color: #e2e8f0; }
 
     /* ── FOOTER ── */
     footer {
-      background: #020617;
-      border-top: 1px solid #1e293b;
+      background: #060C18;
+      border-top: 1px solid #0D1A3A;
       text-align: center;
       padding: 2rem 1rem;
       color: #475569;
