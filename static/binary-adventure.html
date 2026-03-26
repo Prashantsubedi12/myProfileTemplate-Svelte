@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Binary Adventure 🔢</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0f0f1a;
+      --card: #1a1a2e;
+      --card2: #16213e;
+      --accent: #e94560;
+      --blue: #0f3460;
+      --cyan: #00d4ff;
+      --green: #00ff88;
+      --yellow: #ffd700;
+      --purple: #a855f7;
+      --text: #e0e0e0;
+      --muted: #888;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15,15,26,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(233,69,96,0.3);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .nav-logo { font-size: 1.4rem; font-weight: 800; color: var(--cyan); letter-spacing: -1px; }
+    .nav-logo span { color: var(--accent); }
+    .nav-sections {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+    .nav-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--muted);
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover, .nav-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .nav-progress {
+      font-size: 0.8rem;
+      color: var(--cyan);
+      font-weight: 600;
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 5rem 1rem 3rem;
+      background: radial-gradient(ellipse at 50% 0%, rgba(233,69,96,0.15) 0%, transparent 70%);
+    }
+    .hero-emoji { font-size: 5rem; margin-bottom: 1rem; animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    .hero h1 { font-size: clamp(2rem,5vw,3.5rem); font-weight: 900; letter-spacing: -2px; }
+    .hero h1 .hi { color: var(--cyan); }
+    .hero h1 .binary { color: var(--accent); }
+    .hero p { color: var(--muted); font-size: 1.1rem; margin: 1rem auto; max-width: 500px; line-height: 1.6; }
+    .hero-badges { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem; }
+    .badge { background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.3); color: var(--cyan); padding: 0.3rem 0.9rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .start-btn {
+      display: inline-block;
+      margin-top: 2rem;
+      background: linear-gradient(135deg, var(--accent), #ff6b9d);
+      color: #fff;
+      border: none;
+      padding: 0.85rem 2.5rem;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(233,69,96,0.4);
+    }
+    .start-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(233,69,96,0.5); }
+
+    /* XP BAR */
+    .xp-bar-wrap {
+      background: var(--card);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 0.6rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .xp-label { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+    .xp-track { flex: 1; height: 8px; background: rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; }
+    .xp-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--green)); border-radius: 10px; transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+    .xp-val { font-size: 0.8rem; color: var(--cyan); font-weight: 700; white-space: nowrap; }
+
+    /* SECTIONS */
+    .section {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .section-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .section h2 { font-size: clamp(1.6rem,4vw,2.4rem); font-weight: 800; margin-bottom: 0.75rem; }
+    .section > p { color: var(--muted); line-height: 1.7; margin-bottom: 1.5rem; }
+
+    /* CARD */
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .card h3 { font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--cyan); }
+
+    /* ===== SECTION 1: LIGHT BULBS ===== */
+    .bulbs-container { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin: 1.5rem 0; }
+    .bulb-wrap { text-align: center; cursor: pointer; }
+    .bulb {
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #555, #222);
+      border: 3px solid #444;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 0.5rem;
+      box-shadow: 0 0 0 rgba(255,255,0,0);
+    }
+    .bulb.on {
+      background: radial-gradient(circle at 35% 35%, #fff9a0, #ffd700);
+      border-color: #ffd700;
+      box-shadow: 0 0 30px rgba(255,215,0,0.7), 0 0 60px rgba(255,215,0,0.3);
+    }
+    .bulb-label { font-size: 0.85rem; color: var(--muted); }
+    .bulb-value { font-size: 1.1rem; font-weight: 700; color: var(--cyan); margin-top: 0.25rem; }
+    .bit-result {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--green);
+      margin-top: 1rem;
+      min-height: 2.5rem;
+    }
+
+    /* ===== SECTION 2: BOXES ===== */
+    .boxes-row { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; margin: 1.5rem 0; }
+    .bit-box {
+      width: 70px;
+      height: 70px;
+      border-radius: 10px;
+      border: 2px solid rgba(0,212,255,0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.25s;
+      background: rgba(0,212,255,0.05);
+      user-select: none;
+    }
+    .bit-box .pos { font-size: 0.65rem; color: var(--muted); }
+    .bit-box .val { font-size: 1.4rem; font-weight: 900; color: var(--text); margin: 2px 0; }
+    .bit-box .pw { font-size: 0.7rem; color: var(--cyan); }
+    .bit-box.active {
+      background: rgba(0,212,255,0.2);
+      border-color: var(--cyan);
+      box-shadow: 0 0 20px rgba(0,212,255,0.3);
+    }
+    .bit-box.active .val { color: var(--cyan); }
+    .boxes-total {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+    .boxes-total .eq { color: var(--muted); margin: 0 0.5rem; }
+    .boxes-total .num { color: var(--green); font-size: 2rem; }
+    .boxes-binary { text-align: center; color: var(--muted); font-size: 0.9rem; margin-top: 0.3rem; }
+
+    /* ===== SECTION 3: COUNTING ===== */
+    .count-display {
+      text-align: center;
+      font-size: 4rem;
+      font-weight: 900;
+      color: var(--yellow);
+      margin: 1rem 0;
+      font-family: monospace;
+    }
+    .count-binary-display {
+      text-align: center;
+      font-size: 2rem;
+      font-family: monospace;
+      color: var(--cyan);
+      letter-spacing: 6px;
+      margin-bottom: 1rem;
+    }
+    .count-binary-display .bit-1 { color: var(--green); }
+    .count-binary-display .bit-0 { color: rgba(255,255,255,0.15); }
+    .count-controls { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin: 1rem 0; }
+    .count-btn {
+      background: var(--card2);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      padding: 0.6rem 1.4rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .count-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+    .count-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .count-btn.primary:hover { opacity: 0.85; }
+    .count-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-family: monospace; }
+    .count-table th, .count-table td { padding: 0.4rem 0.75rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+    .count-table th { color: var(--cyan); font-size: 0.75rem; letter-spacing: 1px; }
+    .count-table tr.highlight { background: rgba(0,212,255,0.1); color: var(--cyan); }
+
+    /* ===== SECTION 4: PRIZE GAME ===== */
+    .prize-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin: 1.5rem 0; }
+    .prize-door {
+      aspect-ratio: 1;
+      border-radius: 14px;
+      border: 2px solid rgba(168,85,247,0.3);
+      background: rgba(168,85,247,0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--purple);
+      transition: all 0.25s;
+      gap: 0.25rem;
+    }
+    .prize-door:hover:not(.revealed) { background: rgba(168,85,247,0.2); border-color: var(--purple); }
+    .prize-door .door-num { font-size: 1.4rem; }
+    .prize-door .door-bin { font-family: monospace; font-size: 0.7rem; color: var(--muted); }
+    .prize-door.revealed { cursor: default; border-color: rgba(255,255,255,0.1); }
+    .prize-door.prize-yes { background: rgba(0,255,136,0.15); border-color: var(--green); }
+    .prize-door.prize-no { background: rgba(233,69,96,0.1); border-color: rgba(233,69,96,0.3); }
+    .prize-door .door-emoji { font-size: 1.8rem; }
+    .prize-status { text-align: center; font-size: 1.1rem; font-weight: 600; min-height: 2rem; color: var(--yellow); margin-top: 0.5rem; }
+    .prize-score { text-align: center; color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem; }
+    .prize-target { text-align: center; margin: 1rem 0; }
+    .prize-target .target-num {
+      font-size: 2.5rem; font-weight: 900; color: var(--yellow); font-family: monospace;
+    }
+    .prize-target .target-hint { color: var(--muted); font-size: 0.9rem; }
+
+    /* ===== SECTION 5: COUNTER MACHINE ===== */
+    .machine-wrap {
+      background: var(--card2);
+      border-radius: 20px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .machine-display {
+      font-size: 5rem;
+      font-weight: 900;
+      font-family: monospace;
+      color: var(--green);
+      text-shadow: 0 0 30px rgba(0,255,136,0.5);
+      margin: 0.5rem 0;
+      letter-spacing: 4px;
+    }
+    .machine-decimal { font-size: 1rem; color: var(--muted); margin-bottom: 1rem; }
+    .machine-decimal span { color: var(--cyan); font-size: 1.4rem; font-weight: 700; }
+    .machine-bits { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin: 1rem 0; }
+    .m-bit {
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
+      border: 2px solid rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: monospace;
+      transition: all 0.2s;
+    }
+    .m-bit.on { background: rgba(0,255,136,0.2); border-color: var(--green); box-shadow: 0 0 12px rgba(0,255,136,0.3); }
+    .m-bit .mbit-v { font-size: 1.3rem; font-weight: 900; }
+    .m-bit.on .mbit-v { color: var(--green); }
+    .m-bit:not(.on) .mbit-v { color: rgba(255,255,255,0.2); }
+    .m-bit .mbit-p { font-size: 0.6rem; color: var(--muted); }
+    .machine-btns { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem; }
+    .m-btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .m-btn.inc { background: var(--green); color: #000; }
+    .m-btn.dec { background: var(--accent); color: #fff; }
+    .m-btn.rst { background: rgba(255,255,255,0.1); color: var(--text); }
+    .m-btn.auto { background: var(--cyan); color: #000; }
+    .m-btn:hover { opacity: 0.85; transform: scale(1.03); }
+    .machine-convert { margin-top: 1.5rem; }
+    .convert-input-wrap { display: flex; gap: 0.5rem; justify-content: center; align-items: center; flex-wrap: wrap; }
+    .convert-input {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--text);
+      padding: 0.6rem 1rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      width: 120px;
+      text-align: center;
+    }
+    .convert-result { margin-top: 0.75rem; color: var(--cyan); font-weight: 700; font-size: 1.1rem; min-height: 1.5rem; }
+
+    /* ===== SECTION 6: QUIZ ===== */
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+    .quiz-score-badge { background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.3); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; color: var(--cyan); }
+    .quiz-q { font-size: 1.2rem; font-weight: 700; margin-bottom: 1.25rem; line-height: 1.5; }
+    .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .quiz-opt {
+      background: rgba(255,255,255,0.04);
+      border: 2px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      text-align: left;
+    }
+    .quiz-opt:hover:not(:disabled) { border-color: var(--cyan); color: var(--cyan); }
+    .quiz-opt.correct { background: rgba(0,255,136,0.15); border-color: var(--green); color: var(--green); }
+    .quiz-opt.wrong { background: rgba(233,69,96,0.15); border-color: var(--accent); color: var(--accent); }
+    .quiz-feedback { margin-top: 1rem; padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.95rem; line-height: 1.5; min-height: 3rem; }
+    .quiz-feedback.correct { background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.3); color: var(--green); }
+    .quiz-feedback.wrong { background: rgba(233,69,96,0.1); border: 1px solid rgba(233,69,96,0.3); color: #ff8aaa; }
+    .quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+    .quiz-next {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quiz-next:hover { opacity: 0.85; }
+    .quiz-progress-dots { display: flex; gap: 0.4rem; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.15); }
+    .dot.done { background: var(--green); }
+    .dot.current { background: var(--cyan); }
+    .quiz-final {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .quiz-final .final-emoji { font-size: 4rem; margin-bottom: 1rem; }
+    .quiz-final h3 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .quiz-final p { color: var(--muted); margin-bottom: 1.5rem; }
+    .quiz-restart {
+      background: var(--cyan);
+      color: #000;
+      border: none;
+      padding: 0.7rem 2rem;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--card);
+      border: 1px solid rgba(0,212,255,0.3);
+      color: var(--cyan);
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      font-weight: 600;
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      z-index: 200;
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    footer a { color: var(--cyan); text-decoration: none; }
+
+    /* RESPONSIVE */
+    @media (max-width: 480px) {
+      .bit-box { width: 56px; height: 56px; }
+      .prize-grid { grid-template-columns: repeat(4,1fr); gap: 0.5rem; }
+      .quiz-options { grid-template-columns: 1fr; }
+      .machine-display { font-size: 3.5rem; }
+      .bulbs-container { gap: 1rem; }
+      .bulb { width: 58px; height: 58px; font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Binary<span>.</span>run</div>
+  <div class="nav-sections" id="navSections"></div>
+  <div class="nav-progress" id="navProgress">0 / 6</div>
+</nav>
+
+<!-- XP BAR -->
+<div class="xp-bar-wrap">
+  <span class="xp-label">XP</span>
+  <div class="xp-track"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+  <span class="xp-val" id="xpVal">0</span>
+</div>
+
+<!-- HERO -->
+<div class="hero" id="top">
+  <div class="hero-emoji">🔢</div>
+  <h1><span class="hi">Binary</span> <span class="binary">Adventure</span></h1>
+  <p>Learn how computers think in 0s and 1s — through interactive demos, games, and a quiz. No textbooks, just fun.</p>
+  <div class="hero-badges">
+    <span class="badge">6 Sections</span>
+    <span class="badge">Interactive</span>
+    <span class="badge">Quiz Included</span>
+    <span class="badge">For Beginners</span>
+  </div>
+  <button class="start-btn" onclick="document.getElementById('s1').scrollIntoView({behavior:'smooth'})">Start Learning →</button>
+</div>
+
+<!-- ===== SECTION 1: WHAT'S A BIT ===== -->
+<section class="section" id="s1">
+  <span class="section-tag">Section 1</span>
+  <h2>💡 What's a Bit?</h2>
+  <p>A <strong>bit</strong> is the smallest piece of information a computer can store — it's either <strong>OFF (0)</strong> or <strong>ON (1)</strong>. Think of it like a light switch. Click the bulbs below!</p>
+
+  <div class="card">
+    <h3>Click to toggle the lights</h3>
+    <div class="bulbs-container" id="bulbs"></div>
+    <div class="bit-result" id="bulbResult"></div>
+    <p style="text-align:center;color:var(--muted);font-size:0.85rem;margin-top:0.5rem">Each ON bulb = 1, each OFF bulb = 0</p>
+  </div>
+
+  <div class="card">
+    <h3>Key Facts</h3>
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:0.6rem;color:var(--muted);line-height:1.6;font-size:0.95rem">
+      <li>⚡ <strong style="color:var(--text)">1 bit</strong> = one 0 or 1</li>
+      <li>📦 <strong style="color:var(--text)">8 bits</strong> = 1 byte (enough to store one letter)</li>
+      <li>💾 <strong style="color:var(--text)">1,000,000 bytes</strong> = 1 megabyte (one song!)</li>
+      <li>🧠 <strong style="color:var(--text)">Everything</strong> on your computer is made of bits: photos, videos, code, emoji</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== SECTION 2: THE BOXES ===== -->
+<section class="section" id="s2">
+  <span class="section-tag">Section 2</span>
+  <h2>📦 The Magic Boxes</h2>
+  <p>Binary uses <strong>place values</strong> — just like decimal! Each box holds a power of 2. Click boxes to turn them ON and see the number they make.</p>
+
+  <div class="card">
+    <h3>Toggle boxes — add their values</h3>
+    <div class="boxes-row" id="boxesRow"></div>
+    <div class="boxes-total">
+      <span id="boxesFormula" style="color:var(--muted);font-size:0.9rem"></span>
+      <span class="eq">=</span>
+      <span class="num" id="boxesTotal">0</span>
+    </div>
+    <div class="boxes-binary" id="boxesBinary">Binary: 00000000</div>
+  </div>
+
+  <div class="card">
+    <h3>Powers of 2</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:0.5rem">
+      <div id="powersGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 3: COUNTING ===== -->
+<section class="section" id="s3">
+  <span class="section-tag">Section 3</span>
+  <h2>🔢 Binary Counting</h2>
+  <p>Count from 0 upward and watch the binary change. Notice the pattern — the rightmost bit flips every step!</p>
+
+  <div class="card">
+    <div class="count-display" id="countNum">0</div>
+    <div class="count-binary-display" id="countBin">0000</div>
+    <div class="count-controls">
+      <button class="count-btn primary" onclick="adjustCount(1)">+1 Count Up</button>
+      <button class="count-btn" onclick="adjustCount(-1)">−1 Count Down</button>
+      <button class="count-btn" onclick="resetCount()">Reset</button>
+      <button class="count-btn" id="autoBtn" onclick="toggleAuto()">▶ Auto</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Reference Table (0–15)</h3>
+    <table class="count-table" id="countTable"></table>
+  </div>
+</section>
+
+<!-- ===== SECTION 4: PRIZE GAME ===== -->
+<section class="section" id="s4">
+  <span class="section-tag">Section 4</span>
+  <h2>🎮 Prize Game</h2>
+  <p>A number will appear. Find the door with that binary number written on it! Each door hides a prize or a dud.</p>
+
+  <div class="card">
+    <div class="prize-target">
+      <div class="target-hint">Find this number in binary:</div>
+      <div class="target-num" id="prizeTarget">?</div>
+    </div>
+    <div class="prize-grid" id="prizeGrid"></div>
+    <div class="prize-status" id="prizeStatus">Pick a door!</div>
+    <div class="prize-score" id="prizeScore">Score: 0 / 0</div>
+    <div style="text-align:center;margin-top:0.75rem">
+      <button class="count-btn primary" onclick="newPrizeRound()">New Round</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 5: COUNTER MACHINE ===== -->
+<section class="section" id="s5">
+  <span class="section-tag">Section 5</span>
+  <h2>⚙️ Binary Counter Machine</h2>
+  <p>An 8-bit counter — watch all the bits work together. Use the buttons or type a decimal number to convert it.</p>
+
+  <div class="machine-wrap">
+    <div class="machine-display" id="machineDisplay">00000000</div>
+    <div class="machine-decimal">= <span id="machineDecimal">0</span></div>
+    <div class="machine-bits" id="machineBits"></div>
+    <div class="machine-btns">
+      <button class="m-btn inc" onclick="machineStep(1)">+1</button>
+      <button class="m-btn dec" onclick="machineStep(-1)">−1</button>
+      <button class="m-btn rst" onclick="machineReset()">Reset</button>
+      <button class="m-btn auto" id="machineAutoBtn" onclick="toggleMachineAuto()">▶ Auto</button>
+    </div>
+    <div class="machine-convert">
+      <p style="color:var(--muted);font-size:0.85rem;margin-bottom:0.5rem">Or type a decimal number (0–255):</p>
+      <div class="convert-input-wrap">
+        <input type="number" class="convert-input" id="convertInput" min="0" max="255" placeholder="42" oninput="liveConvert(this.value)" />
+        <button class="count-btn primary" onclick="applyConvert()">Convert</button>
+      </div>
+      <div class="convert-result" id="convertResult"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 6: QUIZ ===== -->
+<section class="section" id="s6">
+  <span class="section-tag">Section 6</span>
+  <h2>🏆 Quiz Time</h2>
+  <p>Test what you've learned! 10 questions across all topics. Each correct answer earns XP.</p>
+
+  <div class="card" id="quizCard"></div>
+</section>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FOOTER -->
+<footer>
+  <p>Built with ❤️ by <a href="/">Prashant Subedi</a> &nbsp;·&nbsp; <a href="/">← Back to Portfolio</a></p>
+</footer>
+
+<script>
+// ==================== STATE ====================
+let xp = 0;
+const MAX_XP = 500;
+const sections = [
+  { id: 's1', label: '💡 Bits' },
+  { id: 's2', label: '📦 Boxes' },
+  { id: 's3', label: '🔢 Count' },
+  { id: 's4', label: '🎮 Game' },
+  { id: 's5', label: '⚙️ Machine' },
+  { id: 's6', label: '🏆 Quiz' },
+];
+const visited = new Set();
+
+// ==================== NAV ====================
+function buildNav() {
+  const wrap = document.getElementById('navSections');
+  sections.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'nav-btn';
+    btn.textContent = s.label;
+    btn.id = 'nav-' + s.id;
+    btn.onclick = () => document.getElementById(s.id).scrollIntoView({ behavior: 'smooth' });
+    wrap.appendChild(btn);
+  });
+}
+buildNav();
+
+// Intersection observer for nav active state
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      const btn = document.getElementById('nav-' + id);
+      if (btn) btn.classList.add('active');
+      if (!visited.has(id)) {
+        visited.add(id);
+        gainXP(20);
+        updateProgress();
+      }
+    }
+  });
+}, { threshold: 0.3 });
+sections.forEach(s => {
+  const el = document.getElementById(s.id);
+  if (el) io.observe(el);
+});
+
+function updateProgress() {
+  document.getElementById('navProgress').textContent = `${visited.size} / ${sections.length}`;
+}
+
+// ==================== XP ====================
+function gainXP(amount) {
+  xp = Math.min(MAX_XP, xp + amount);
+  const pct = (xp / MAX_XP) * 100;
+  document.getElementById('xpFill').style.width = pct + '%';
+  document.getElementById('xpVal').textContent = xp;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ==================== SECTION 1: BULBS ====================
+const bulbData = [
+  { label: 'Bit 4', value: 0 },
+  { label: 'Bit 3', value: 0 },
+  { label: 'Bit 2', value: 0 },
+  { label: 'Bit 1', value: 0 },
+];
+let bulbXPGiven = false;
+
+function buildBulbs() {
+  const wrap = document.getElementById('bulbs');
+  wrap.innerHTML = '';
+  bulbData.forEach((b, i) => {
+    const div = document.createElement('div');
+    div.className = 'bulb-wrap';
+    div.innerHTML = `
+      <div class="bulb ${b.value ? 'on' : ''}" id="bulb${i}">💡</div>
+      <div class="bulb-label">${b.label}</div>
+      <div class="bulb-value" id="bv${i}">${b.value}</div>
+    `;
+    div.querySelector('.bulb').onclick = () => {
+      b.value = b.value ? 0 : 1;
+      buildBulbs();
+      updateBulbResult();
+      if (!bulbXPGiven) { gainXP(10); bulbXPGiven = true; showToast('+10 XP — You toggled a bit!'); }
+    };
+    wrap.appendChild(div);
+  });
+}
+buildBulbs();
+
+function updateBulbResult() {
+  const bits = bulbData.map(b => b.value).join('');
+  const dec = parseInt(bits, 2);
+  const el = document.getElementById('bulbResult');
+  el.textContent = `${bits} = ${dec} in decimal`;
+}
+
+// ==================== SECTION 2: BOXES ====================
+const boxBits = new Array(8).fill(0);
+let boxXPGiven = false;
+
+function buildBoxes() {
+  const row = document.getElementById('boxesRow');
+  row.innerHTML = '';
+  const powers = [128, 64, 32, 16, 8, 4, 2, 1];
+  powers.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'bit-box' + (boxBits[i] ? ' active' : '');
+    div.innerHTML = `<div class="pos">Bit ${7-i}</div><div class="val">${boxBits[i]}</div><div class="pw">${p}</div>`;
+    div.onclick = () => {
+      boxBits[i] = boxBits[i] ? 0 : 1;
+      buildBoxes();
+      updateBoxesTotal();
+      if (!boxXPGiven) { gainXP(10); boxXPGiven = true; showToast('+10 XP — Toggle master!'); }
+    };
+    row.appendChild(div);
+  });
+}
+
+function updateBoxesTotal() {
+  const powers = [128, 64, 32, 16, 8, 4, 2, 1];
+  let total = 0;
+  let parts = [];
+  boxBits.forEach((b, i) => { if (b) { total += powers[i]; parts.push(powers[i]); } });
+  document.getElementById('boxesTotal').textContent = total;
+  document.getElementById('boxesFormula').textContent = parts.length ? parts.join(' + ') : '0';
+  document.getElementById('boxesBinary').textContent = 'Binary: ' + boxBits.join('');
+}
+
+function buildPowersGrid() {
+  const g = document.getElementById('powersGrid');
+  g.style.display = 'grid';
+  g.style.gridTemplateColumns = 'repeat(auto-fill,minmax(90px,1fr))';
+  g.style.gap = '0.5rem';
+  [0,1,2,3,4,5,6,7].forEach(n => {
+    const d = document.createElement('div');
+    d.style.cssText = 'background:rgba(0,212,255,0.07);border:1px solid rgba(0,212,255,0.15);border-radius:10px;padding:0.5rem;text-align:center;font-family:monospace';
+    d.innerHTML = `<div style="color:var(--muted);font-size:0.7rem">2<sup>${n}</sup></div><div style="font-size:1.2rem;font-weight:700;color:var(--cyan)">${Math.pow(2,n)}</div>`;
+    g.appendChild(d);
+  });
+}
+buildBoxes();
+updateBoxesTotal();
+buildPowersGrid();
+
+// ==================== SECTION 3: COUNT ====================
+let countVal = 0;
+let autoTimer = null;
+
+function adjustCount(d) {
+  countVal = Math.max(0, Math.min(15, countVal + d));
+  updateCountDisplay();
+  gainXP(2);
+}
+function resetCount() { countVal = 0; updateCountDisplay(); }
+function updateCountDisplay() {
+  document.getElementById('countNum').textContent = countVal;
+  const bin = countVal.toString(2).padStart(4, '0');
+  document.getElementById('countBin').innerHTML =
+    bin.split('').map(b => `<span class="${b === '1' ? 'bit-1' : 'bit-0'}">${b}</span>`).join('');
+  // highlight table row
+  document.querySelectorAll('.count-table tr[data-n]').forEach(r => {
+    r.classList.toggle('highlight', parseInt(r.dataset.n) === countVal);
+  });
+}
+function toggleAuto() {
+  if (autoTimer) {
+    clearInterval(autoTimer);
+    autoTimer = null;
+    document.getElementById('autoBtn').textContent = '▶ Auto';
+  } else {
+    document.getElementById('autoBtn').textContent = '⏹ Stop';
+    autoTimer = setInterval(() => {
+      countVal = (countVal + 1) % 16;
+      updateCountDisplay();
+    }, 500);
+  }
+}
+function buildCountTable() {
+  const tbl = document.getElementById('countTable');
+  tbl.innerHTML = '<tr><th>Decimal</th><th>Binary</th><th>Pattern</th></tr>';
+  for (let i = 0; i <= 15; i++) {
+    const bin = i.toString(2).padStart(4, '0');
+    const tr = document.createElement('tr');
+    tr.dataset.n = i;
+    tr.innerHTML = `<td>${i}</td><td style="letter-spacing:4px">${bin}</td><td>${bin.split('').map(b => b === '1' ? '🟢' : '⚫').join('')}</td>`;
+    tbl.appendChild(tr);
+  }
+}
+buildCountTable();
+updateCountDisplay();
+
+// ==================== SECTION 4: PRIZE GAME ====================
+let prizeScore = 0;
+let prizeTotal = 0;
+let prizeAnswer = 0;
+let prizeXPGiven = false;
+
+function newPrizeRound() {
+  prizeAnswer = Math.floor(Math.random() * 16);
+  document.getElementById('prizeTarget').textContent = prizeAnswer;
+  buildPrizeGrid(false);
+  document.getElementById('prizeStatus').textContent = 'Find the binary number!';
+}
+
+function buildPrizeGrid(revealed, chosen = -1) {
+  const grid = document.getElementById('prizeGrid');
+  grid.innerHTML = '';
+  // generate 8 unique numbers including the answer
+  const pool = new Set([prizeAnswer]);
+  while (pool.size < 8) pool.add(Math.floor(Math.random() * 16));
+  const nums = [...pool].sort(() => Math.random() - 0.5);
+
+  nums.forEach(n => {
+    const bin = n.toString(2).padStart(4, '0');
+    const div = document.createElement('div');
+    div.className = 'prize-door' + (revealed ? ' revealed' : '');
+    if (revealed) {
+      if (n === prizeAnswer) {
+        div.classList.add('prize-yes');
+        div.innerHTML = `<div class="door-emoji">${n === chosen ? '🎉' : '⭐'}</div><div class="door-num">${n}</div><div class="door-bin">${bin}</div>`;
+      } else {
+        div.classList.add('prize-no');
+        div.innerHTML = `<div class="door-emoji">💀</div><div class="door-num">${n}</div><div class="door-bin">${bin}</div>`;
+      }
+    } else {
+      div.innerHTML = `<div class="door-num">?</div><div class="door-bin">${bin}</div>`;
+      div.onclick = () => pickDoor(n, nums);
+    }
+    grid.appendChild(div);
+  });
+}
+
+function pickDoor(chosen, nums) {
+  prizeTotal++;
+  const correct = chosen === prizeAnswer;
+  if (correct) {
+    prizeScore++;
+    document.getElementById('prizeStatus').textContent = '🎉 Correct! You found it!';
+    gainXP(20);
+    if (!prizeXPGiven) { prizeXPGiven = true; showToast('+20 XP — Binary Detective!'); }
+  } else {
+    document.getElementById('prizeStatus').textContent = `❌ Wrong! The answer was ${prizeAnswer} = ${prizeAnswer.toString(2).padStart(4,'0')}`;
+  }
+  document.getElementById('prizeScore').textContent = `Score: ${prizeScore} / ${prizeTotal}`;
+  buildPrizeGrid(true, chosen);
+}
+
+newPrizeRound();
+
+// ==================== SECTION 5: MACHINE ====================
+let machineVal = 0;
+let machineAuto = null;
+
+function buildMachineBits() {
+  const wrap = document.getElementById('machineBits');
+  wrap.innerHTML = '';
+  const bin = machineVal.toString(2).padStart(8, '0');
+  [7,6,5,4,3,2,1,0].forEach(bit => {
+    const bval = (machineVal >> bit) & 1;
+    const div = document.createElement('div');
+    div.className = 'm-bit' + (bval ? ' on' : '');
+    div.innerHTML = `<div class="mbit-v">${bval}</div><div class="mbit-p">2<sup>${bit}</sup></div>`;
+    wrap.appendChild(div);
+  });
+  document.getElementById('machineDisplay').textContent = bin;
+  document.getElementById('machineDecimal').textContent = machineVal;
+}
+
+function machineStep(d) {
+  machineVal = Math.max(0, Math.min(255, machineVal + d));
+  buildMachineBits();
+  gainXP(1);
+}
+function machineReset() { machineVal = 0; buildMachineBits(); }
+function toggleMachineAuto() {
+  if (machineAuto) {
+    clearInterval(machineAuto);
+    machineAuto = null;
+    document.getElementById('machineAutoBtn').textContent = '▶ Auto';
+  } else {
+    document.getElementById('machineAutoBtn').textContent = '⏹ Stop';
+    machineAuto = setInterval(() => {
+      machineVal = (machineVal + 1) % 256;
+      buildMachineBits();
+    }, 200);
+  }
+}
+function liveConvert(v) {
+  const n = parseInt(v);
+  if (isNaN(n) || n < 0 || n > 255) {
+    document.getElementById('convertResult').textContent = '';
+    return;
+  }
+  document.getElementById('convertResult').textContent = `${n} → ${n.toString(2).padStart(8,'0')}`;
+}
+function applyConvert() {
+  const n = parseInt(document.getElementById('convertInput').value);
+  if (!isNaN(n) && n >= 0 && n <= 255) {
+    machineVal = n;
+    buildMachineBits();
+    gainXP(5);
+    showToast(`Converted ${n} to binary!`);
+  }
+}
+buildMachineBits();
+
+// ==================== SECTION 6: QUIZ ====================
+const quizQuestions = [
+  { q: 'What does a single bit represent?', opts: ['A letter or number', 'Exactly 0 or 1', '8 pieces of data', 'A megabyte'], ans: 1, exp: 'A bit is the most basic unit — it can only be 0 or 1, like a switch.' },
+  { q: 'How many bits make up 1 byte?', opts: ['4', '16', '8', '2'], ans: 2, exp: '8 bits = 1 byte. A byte can represent 256 different values (0–255).' },
+  { q: 'What is the decimal value of binary 1010?', opts: ['10', '8', '12', '6'], ans: 0, exp: '1010 = 8+0+2+0 = 10.' },
+  { q: 'Which place value does the leftmost bit in a 4-bit number represent?', opts: ['1', '2', '8', '4'], ans: 2, exp: 'In a 4-bit number, the bits from left to right are 8, 4, 2, 1.' },
+  { q: 'Convert decimal 7 to binary:', opts: ['0111', '1000', '0110', '1001'], ans: 0, exp: '7 = 4+2+1 = 0111 in 4-bit binary.' },
+  { q: 'What is binary 1111 in decimal?', opts: ['13', '14', '15', '16'], ans: 2, exp: '1111 = 8+4+2+1 = 15.' },
+  { q: 'Computers use binary because:', opts: ['It looks cool', 'Electronic circuits have two natural states (on/off)', 'It is faster to type', 'Humans prefer it'], ans: 1, exp: 'Transistors in circuits are either conducting (1) or not (0) — binary maps perfectly.' },
+  { q: 'What is the next binary number after 0111?', opts: ['0110', '1000', '1001', '0100'], ans: 1, exp: '0111 + 1 = 1000. All bits carry over, like 999+1=1000 in decimal.' },
+  { q: 'How many different values can 3 bits represent?', opts: ['3', '6', '8', '16'], ans: 2, exp: '2³ = 8 values: 000, 001, 010, 011, 100, 101, 110, 111.' },
+  { q: 'Binary 0000 0000 to 1111 1111 gives how many values?', opts: ['128', '255', '256', '512'], ans: 2, exp: '8 bits → 2⁸ = 256 unique values (0 through 255).' },
+];
+
+let quizIdx = 0;
+let quizAnswered = false;
+let quizCorrect = 0;
+
+function renderQuiz() {
+  const card = document.getElementById('quizCard');
+  if (quizIdx >= quizQuestions.length) {
+    renderQuizFinal(card);
+    return;
+  }
+  const q = quizQuestions[quizIdx];
+  const dots = quizQuestions.map((_, i) =>
+    `<div class="dot ${i < quizIdx ? 'done' : i === quizIdx ? 'current' : ''}"></div>`
+  ).join('');
+
+  card.innerHTML = `
+    <div class="quiz-header">
+      <span class="quiz-score-badge">✅ ${quizCorrect} correct</span>
+      <div class="quiz-progress-dots">${dots}</div>
+    </div>
+    <div class="quiz-q">Q${quizIdx+1}. ${q.q}</div>
+    <div class="quiz-options" id="qopts">
+      ${q.opts.map((o, i) => `<button class="quiz-opt" onclick="answerQuiz(${i})" data-i="${i}">${o}</button>`).join('')}
+    </div>
+    <div class="quiz-feedback" id="qfb"></div>
+    <div class="quiz-nav">
+      <span style="color:var(--muted);font-size:0.85rem">Question ${quizIdx+1} of ${quizQuestions.length}</span>
+      <button class="quiz-next" id="qnext" onclick="nextQuestion()" style="display:none">Next →</button>
+    </div>
+  `;
+  quizAnswered = false;
+}
+
+function answerQuiz(chosen) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = quizQuestions[quizIdx];
+  const correct = chosen === q.ans;
+  if (correct) { quizCorrect++; gainXP(30); }
+
+  document.querySelectorAll('.quiz-opt').forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.ans) btn.classList.add('correct');
+    else if (i === chosen && !correct) btn.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('qfb');
+  fb.className = 'quiz-feedback ' + (correct ? 'correct' : 'wrong');
+  fb.textContent = (correct ? '✅ Correct! ' : '❌ Not quite. ') + q.exp;
+
+  if (correct) showToast('+30 XP — Correct!');
+  document.getElementById('qnext').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  quizIdx++;
+  renderQuiz();
+}
+
+function renderQuizFinal(card) {
+  const pct = Math.round((quizCorrect / quizQuestions.length) * 100);
+  let emoji = pct >= 80 ? '🏆' : pct >= 50 ? '🎯' : '📚';
+  let msg = pct >= 80 ? 'Binary Master! You crushed it!' : pct >= 50 ? 'Good work! Keep practicing.' : 'Keep at it — you\'re learning!';
+  card.innerHTML = `
+    <div class="quiz-final">
+      <div class="final-emoji">${emoji}</div>
+      <h3>${msg}</h3>
+      <p>You scored ${quizCorrect} / ${quizQuestions.length} (${pct}%)</p>
+      <button class="quiz-restart" onclick="restartQuiz()">Restart Quiz</button>
+    </div>
+  `;
+  gainXP(50);
+  showToast('🏆 Quiz complete! +50 XP bonus!');
+}
+
+function restartQuiz() {
+  quizIdx = 0;
+  quizCorrect = 0;
+  renderQuiz();
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

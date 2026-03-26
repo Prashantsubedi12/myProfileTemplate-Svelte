@@ -553,6 +553,36 @@
           </div>
         </div>
 
+        <div class="project-card">
+          <div class="project-emoji">🔢</div>
+          <h3>Binary Adventure</h3>
+          <p>An interactive browser-based platform for learning binary numbers from scratch. Flip light bulbs, toggle magic boxes, play a prize guessing game, and watch an 8-bit counter machine — then test your knowledge with a 10-question quiz.</p>
+          <div class="tags">
+            <span class="tag">HTML</span>
+            <span class="tag">JavaScript</span>
+            <span class="tag">CSS</span>
+          </div>
+          <div class="project-links">
+            <a href="/binary-adventure.html" class="project-link">Play →</a>
+            <a href="https://github.com/Prashantsubedi12/binary-learning-project" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-emoji">🐍</div>
+          <h3>Python Adventure</h3>
+          <p>A full interactive Python learning platform with 15 lessons, a live code playground, quiz arena, badge system, and XP progression. Includes 5 pro projects: Password Generator, Contact Book, Text Analyzer, Quiz Engine, and RPG Inventory.</p>
+          <div class="tags">
+            <span class="tag">HTML</span>
+            <span class="tag">JavaScript</span>
+            <span class="tag">CSS</span>
+          </div>
+          <div class="project-links">
+            <a href="https://python-adventure-six.vercel.app" target="_blank" rel="noopener" class="project-link">Live Demo →</a>
+            <a href="https://github.com/Prashantsubedi12/python-adventure" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
