@@ -605,10 +605,6 @@
             My curiosity drives me — from the low-level logic of C programming to the
             software engineering behind SpaceX's Falcon rocket landings.
           </p>
-          <p>
-            I'm also the founder of <span>Team Extra</span>, a programming club at my
-            university dedicated to collaborative coding and exploring new tech stacks.
-          </p>
         </div>
         <div>
           <p class="skills-title">Skills &amp; Interests</p>
